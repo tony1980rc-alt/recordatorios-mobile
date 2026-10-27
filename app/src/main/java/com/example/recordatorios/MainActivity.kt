@@ -17,6 +17,11 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.recordatorios.ui.theme.RecordatoriosTheme
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.mutableStateOf
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -43,8 +48,10 @@ fun Greeting(name: String, modifier: Modifier = Modifier) {
         categoriaEstudio to Color(0xFF1565C0),
         categoriaTrabajo to Color(0xFF2E7D32)
     )
-
+    val contexto = LocalContext.current
+    var mensajeSeleccion by remember { mutableStateOf("") }
     Column(modifier = modifier.padding(16.dp)) {
+        Text(text = mensajeSeleccion)
         when (estadoPantalla) {
             EstadoPantalla.Cargando -> {
                 Text(text = "Cargando…")
@@ -56,28 +63,20 @@ fun Greeting(name: String, modifier: Modifier = Modifier) {
 
             is EstadoPantalla.ConDatos -> {
                 estadoPantalla.recordatorios.forEach { recordatorio ->
-                    Text(text = recordatorio.titulo)
-
-                    Text(
-                        text = recordatorio.categoria.nombre,
-                        color = coloresCategorias[recordatorio.categoria]
-                            ?: Color.Gray
+                    TarjetaRecordatorio(
+                        recordatorio = recordatorio,
+                        onClick = {
+                            mensajeSeleccion = "Seleccionaste: ${recordatorio.titulo}"
+                        }
                     )
 
-                    val textoPrioridad = when (recordatorio.prioridad) {
-                        Prioridad.Alta -> "Alta"
-                        Prioridad.Media -> "Media"
-                        Prioridad.Baja -> "Baja"
-                    }
 
-                    Text(text = "Prioridad: $textoPrioridad")
 
-                    val textoEstado = when (recordatorio.estado) {
-                        EstadoRecordatorio.Pendiente -> "Pendiente"
-                        EstadoRecordatorio.Completado -> "Completado"
-                    }
 
-                    Text(text = "Estado: $textoEstado")
+
+
+
+
 
                     Spacer(modifier = Modifier.height(16.dp))
                 }
